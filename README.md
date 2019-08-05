@@ -27,7 +27,7 @@ then type:
 ```
 $ python
 >>> import mahstery
->>> mahstery.run(Mz, z, c)
+>>> mahstery.run()
 ```
 ### Support and Contact
 
