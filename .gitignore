@@ -1,0 +1,6 @@
+.idea
+*.pyc
+__cache__/
+.vscode/
+build/
+*.egg-info/

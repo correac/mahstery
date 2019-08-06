@@ -3,10 +3,6 @@
 
 """Routine for fitting mass history profiles to halo accretion histories from modified gravity simulations."""
 
-__author__ = 'Camila Correa'
-__email__ = 'correa@strw.leidenuniv.nl'
-__version__ = '0.0.1'
-
 import numpy as np
 from scipy.interpolate import interp1d
 import h5py
@@ -65,18 +61,17 @@ def _checkinput(Mi, zi, ci, verbose=None):
         return -1
     return Mi, zi, ci
 
+def which_redshift(snap):
+    file = './data/eagle_aexpoutputs.txt'
+    a = genfromtxt(file)
+    z = 1.0/a-1
+    snap_list = np.arange(0,29)
+    select = np.where(snap_list==snap)[0]
+    return z[select]
 
 def readEAGLE(verbose=None):
     """ Getting some data from the EAGLE simulations,
         dark matter only run (DMO) L0100N1504 """
-    
-    def which_redshift(snap):
-        file = './data/eagle_aexpoutputs.txt'
-        a = genfromtxt(file)
-        z = 1.0/a-1
-        snap_list = np.arange(0,29)
-        select = np.where(snap_list==snap)[0]
-        return z[select]
     
     file = './data/L100N1504_DMONLY_catalogue_FOFgroups.hdf5'
     with h5py.File(file, "r") as hf:
@@ -124,6 +119,53 @@ def readEAGLE(verbose=None):
     for i in range(28,5,-1):zrange[28-i] = which_redshift(i)
     return Mz, zrange, c
 
+#Let's define a mass history class
+def MAH(Mz,z,c):
+    """ Mass history function that calculates formation time (zf),
+        mean density within scale radius (rho2) and mass within
+        scale radius (M2).
+        
+    Parameters
+    ----------
+    Mz : numpy array of dimensions : (n_haloes x n_snapshots)
+        where n_halos is the number of haloes & n_snashots is
+        the number of output redshifts from the simulation.
+        Mz[:,0] should correspond to the halo mass M200 of all
+        haloes at z = 0. Mz[0,:] should correspond to the halo
+        mass history M(z) of halo index 0.
+        Mz must be in unit of solar masses.
+    z : numpy array of dimensions n_snashots, where n_snashots
+        is the number of output redshifts from the simulation.
+    c : numpy array of dimensions n_haloes, where n_halos is the
+        number of haloes from the simulation. c corresponds to
+        the halos' concentration c200.  """
+    # Remove zeros from no-progenitors finding
+    no_zero = np.where(Mz>0)[0]
+    Mz = np.log10(Mz[no_zero]) # Mz in units of log_10 Msun
+    z = z[no_zero]
+    # Calculate M2 = M_{-2} = M(r<r_{-2}) (Mass within scale radius)
+    # assuming NFW profile
+    Y1 = np.log(2)-0.5
+    Yc = np.log(1.+c)-c/(1.+c)
+    M2 = Mz[0]+np.log10(Y1/Yc) #units log_10 Msun
+    # Calculate rho2 = rho(<r_{-2} mean density within scale radius assuming NFW profile
+    # Mean density in units of critical density at z=0
+    rho2 = 200.*(Y1/Yc)*c**3  #rho2/rho_crit, with rho_crit(z=0) = 2.775 x 10^11 h^2 Msun/Mpc^3
+    # Apply cubic interpolation to determine formation time
+    f = interp1d(Mz,z, kind='linear',fill_value="extrapolate",assume_sorted=False)
+    zf = f(M2)
+    # Obtain formation time zf = z_{-2}, M(z_{-2}) = M_{-2}
+    # Redshift at which halo mass equals z=0 enclosed mass within scale radius
+    return Mz,z,c,M2,rho2,zf
+
+def bestfit(x,gamma):
+    """ Best-fitting function, with gamma unkown """
+    alpha_1 = x[0]
+    alpha_2 = x[1]
+    x = x[2:len(x)]
+    alpha = alpha_1-gamma*alpha_2
+    f = alpha*x/3.+gamma*(np.exp(x/3.)-1.0)
+    return f
 
 def run(Mz=None, z=None, c=None, verbose=None):
     """ Run mahstery code to obtain the best-fit expression for halo mass
@@ -167,42 +209,6 @@ def run(Mz=None, z=None, c=None, verbose=None):
         print('Calculating best-fit expression from EAGLE DMO L0100N1504 simulation')
         Mz, z, c = readEAGLE(verbose=verbose)
 
-    #Let's define a mass history class
-    class MAH:
-        def __init__(self,Mz,z,c):
-            # Remove zeros from no-progenitors finding
-            no_zero = np.where(Mz>0)[0]
-            Mz = np.log10(Mz[no_zero])
-            z = z[no_zero]
-            # Mz in units of log_10 Msun
-            self.Mz = Mz
-            self.z = z
-            self.c = c
-            # Calculate M2 = M_{-2} = M(r<r_{-2}) (Mass within scale radius)
-            # assuming NFW profile
-            Y1 = np.log(2)-0.5
-            Yc = np.log(1.+c)-c/(1.+c)
-            M2 = Mz[0]+np.log10(Y1/Yc) #units log_10 Msun
-            self.M2 = M2
-            # Calculate rho2 = rho(<r_{-2} mean density within scale radius assuming NFW profile
-            # Mean density in units of critical density at z=0
-            self.rho2 = 200.*(Y1/Yc)*c**3  #rho2/rho_crit, with rho_crit(z=0) = 2.775 x 10^11 h^2 Msun/Mpc^3
-            
-            # Apply cubic interpolation to determine formation time
-            f = interp1d(Mz,z, kind='linear',fill_value="extrapolate",assume_sorted=False)
-            zf = f(M2)
-            # Obtain formation time zf = z_{-2}, M(z_{-2}) = M_{-2}
-            # Redshift at which halo mass equals z=0 enclosed mass within scale radius
-            self.zf = zf
-
-    def bestfit(x,gamma):
-        """ Best-fitting function, with gamma unkown """
-        alpha_1 = x[0]
-        alpha_2 = x[1]
-        x = x[2:len(x)]
-        alpha = alpha_1-gamma*alpha_2
-        f = alpha*x/3.+gamma*(np.exp(x/3.)-1.0)
-        return f
 
     # Making fit:
     #First separate in mass bins
@@ -212,6 +218,8 @@ def run(Mz=None, z=None, c=None, verbose=None):
     index = np.digitize(np.log10(Mz[:,0]), massbins)
     index_array = np.arange(0,len(Mz[:,0]))
     gamma = []
+
+    #Loop over mass bins
     for i in range(1, len(massbins)):
         if np.sum(index == i)<10:continue #Setting min. bin num.
         index_i = index_array[index == i]
@@ -220,15 +228,15 @@ def run(Mz=None, z=None, c=None, verbose=None):
         halo_zf = [] # Defining empty arrays
         halo_c = [] # Defining empty arrays
     
-
-        for j in index_i: #loop over individual haloes
-            halo = MAH(Mz[j,:],z,c[j])
-            rho_m = np.log((1.+halo.z)**3/(1.+halo.zf)**3) # x value
-            halo_m = np.log(10**halo.Mz/10**halo.M2) # y value
+        #loop over individual haloes in mass bin
+        for j in index_i:
+            halo_Mz,halo_z,halo_c,halo_M2,halo_rho2,halo_zf = MAH(Mz[j,:],z,c[j])
+            rho_m = np.log((1.+halo_z)**3/(1.+halo_zf)**3) # x value
+            halo_m = np.log(10**halo_Mz/10**halo_M2) # y value
             x = np.append(x,rho_m)
             y = np.append(y,halo_m)
-            halo_zf = np.append(halo_zf,halo.zf)
-            halo_c = np.append(halo_c,halo.c)
+            halo_zf = np.append(halo_zf,halo_zf)
+            halo_c = np.append(halo_c,halo_c)
 
         cm = np.median(halo_c) #Median of halo concentration in this mass bin
         zfm = np.median(halo_zf) #Median of halo formation time in this mass bin
