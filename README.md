@@ -24,7 +24,7 @@ unzip the data_mahstery folder. Create the mahstery folder ```mkdir mahstery```.
 Move data_mahstery folder inside the mahstery folder. Then type 
 ```git clone git@github.com:correac/mah_routine.git``` and
 type ```cd mah_routine/mahstery```.
-Finallt run it:
+Finally run it:
 ```
 $ python
 >>> import mahstery
