@@ -73,7 +73,7 @@ def readEAGLE(verbose=None):
     """ Getting some data from the EAGLE simulations,
         dark matter only run (DMO) L0100N1504 """
     
-    file = './data/L100N1504_DMONLY_catalogue_FOFgroups.hdf5'
+    file = '../../data_mahstery/L100N1504_DMONLY_catalogue_FOFgroups.hdf5'
     with h5py.File(file, "r") as hf:
         Haloc200 = hf['Data/c200'].value
         HaloM200 = hf['Data/M_Crit200'].value
@@ -95,7 +95,7 @@ def readEAGLE(verbose=None):
     c = Haloc200[select_halos]
     
     for i in np.arange(28,5,-1):
-        with h5py.File('./data/L0100N1504_DMONLY_%03d.hdf5'%i,'r') as snap:
+        with h5py.File('../../data_mahstery/L0100N1504_DMONLY_%03d.hdf5'%i,'r') as snap:
             M200 = snap['/Subhalo/M_Crit200'][:]
             GalaxyID = snap['/Subhalo/GalaxyID'][:]
         
@@ -119,7 +119,7 @@ def readEAGLE(verbose=None):
     for i in range(28,5,-1):zrange[28-i] = which_redshift(i)
     return Mz, zrange, c
 
-#Let's define a mass history class
+
 def MAH(Mz,z,c):
     """ Mass history function that calculates formation time (zf),
         mean density within scale radius (rho2) and mass within
@@ -139,6 +139,7 @@ def MAH(Mz,z,c):
     c : numpy array of dimensions n_haloes, where n_halos is the
         number of haloes from the simulation. c corresponds to
         the halos' concentration c200.  """
+    
     # Remove zeros from no-progenitors finding
     no_zero = np.where(Mz>0)[0]
     Mz = np.log10(Mz[no_zero]) # Mz in units of log_10 Msun

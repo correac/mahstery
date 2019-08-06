@@ -18,12 +18,14 @@ concentration is the ratio of halo virial mass (R200) over scale radius (obtaine
 
 Download EAGLE database:
 
-[Dropbox link](https://www.dropbox.com/sh/2lc06bh1ug6tp1l/AAB9yn-0sX08PjfsCoGLg2dua?dl=0)
+[link](https://home.strw.leidenuniv.nl/~correa/download/data_mahstery.zip)
 
-copy paste data folder inside mahstery folder,
-
-then type:
-
+unzip the data_mahstery folder
+Create the mahstery folder ```mkdir mahstery```
+move data_mahstery folder inside the mahstery folder.
+type ```git clone git@github.com:correac/mah_routine.git```
+type ```cd mah_routine/mahstery```
+type:
 ```
 $ python
 >>> import mahstery
@@ -32,4 +34,4 @@ $ python
 ### Support and Contact
 
 If you have trouble with mahstery or you have feature requests/suggestions please
-send an email to (correa@strw.leidenuniv.nl) or twitter (@CamiAcorrea)
+open an issue at https://github.com/correac/mahstery/issues
