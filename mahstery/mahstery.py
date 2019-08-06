@@ -233,8 +233,8 @@ def run(Mz=None, z=None, c=None, verbose=None, output=True):
 
     # Making fit:
     #First separate in mass bins
-    minM = np.min(np.log10(Mz[:,0]))
-    maxM = np.max(np.log10(Mz[:,0]))
+    minM = np.percentile(np.log10(Mz[:,0]),4)
+    maxM = np.percentile(np.log10(Mz[:,0]),96)
     massbins = np.arange(minM,maxM,0.2)
     index = np.digitize(np.log10(Mz[:,0]), massbins)
     index_array = np.arange(0,len(Mz[:,0]))
@@ -251,8 +251,8 @@ def run(Mz=None, z=None, c=None, verbose=None, output=True):
     
         #loop over individual haloes in mass bin
         for j in index_i:
-            if len(np.where(Mz[j,:]!=0.0)[0])<5:continue #At least 5 points in Mz-z plane
             halo_Mz,halo_z,halo_c,halo_M2,halo_rho2,halo_zf = MAH(Mz[j,:],z,c[j])
+            if halo_zf<0:continue  # Incorrect interpolation
             rho_m = np.log((1.+halo_z)**3/(1.+halo_zf)**3) # x value
             halo_m = np.log(10**halo_Mz/10**halo_M2) # y value
             x = np.append(x,rho_m)
@@ -292,7 +292,7 @@ def run(Mz=None, z=None, c=None, verbose=None, output=True):
         xsend = np.array([alpha_1,alpha_2])
         xsend = np.append(xsend,xbins)
         plt.plot(xbins,bestfit(xsend,gamma_m),'-',lw=3,color='white')
-        plt.plot(xbins,bestfit(xsend,gamma_m),'--',lw=2.4,color='black',label='Bestfit: $\gamma=$ %.2f' %gamma_m +'+/- %.2f' %err)
+        plt.plot(xbins,bestfit(xsend,gamma_m),'--',lw=2.4,color='black',label='Bestfit: $\gamma=$ %.2f' %gamma_m +' +/- %.2f' %err)
 
         plt.axis([-6,2,-2,3])
         plt.xlabel(r'ln $\rho_{\rm{m}}(z)/\rho_{\rm{m}}(z=z_{-2})$')

@@ -5,8 +5,7 @@ Credits
 Development Lead
 ----------------
 
-* Camila Correa <correa@strw.leidenuniv.nl>
-
+* Camila Correa (Leiden University)
 Contributors
 ------------
 
