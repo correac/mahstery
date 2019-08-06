@@ -20,12 +20,11 @@ Download EAGLE database:
 
 [link](https://home.strw.leidenuniv.nl/~correa/download/data_mahstery.zip)
 
-unzip the data_mahstery folder
-Create the mahstery folder ```mkdir mahstery```
-move data_mahstery folder inside the mahstery folder.
-type ```git clone git@github.com:correac/mah_routine.git```
-type ```cd mah_routine/mahstery```
-type:
+unzip the data_mahstery folder. Create the mahstery folder ```mkdir mahstery```. 
+Move data_mahstery folder inside the mahstery folder. Then type 
+```git clone git@github.com:correac/mah_routine.git``` and
+type ```cd mah_routine/mahstery```.
+Finallt run it:
 ```
 $ python
 >>> import mahstery
