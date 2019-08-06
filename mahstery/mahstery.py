@@ -8,6 +8,7 @@ from scipy.interpolate import interp1d
 import h5py
 from pylab import genfromtxt
 from scipy.optimize import curve_fit
+import matplotlib.pyplot as plt
 
 def _checkinput(Mi, zi, ci, verbose=None):
     """ Check and convert any input scalar or array to numpy array """
@@ -62,7 +63,7 @@ def _checkinput(Mi, zi, ci, verbose=None):
     return Mi, zi, ci
 
 def which_redshift(snap):
-    file = './data/eagle_aexpoutputs.txt'
+    file = '../../data_mahstery/data/eagle_aexpoutputs.txt'
     a = genfromtxt(file)
     z = 1.0/a-1
     snap_list = np.arange(0,29)
@@ -73,7 +74,7 @@ def readEAGLE(verbose=None):
     """ Getting some data from the EAGLE simulations,
         dark matter only run (DMO) L0100N1504 """
     
-    file = '../../data_mahstery/L100N1504_DMONLY_catalogue_FOFgroups.hdf5'
+    file = '../../data_mahstery/data/L100N1504_DMONLY_catalogue_FOFgroups.hdf5'
     with h5py.File(file, "r") as hf:
         Haloc200 = hf['Data/c200'].value
         HaloM200 = hf['Data/M_Crit200'].value
@@ -95,7 +96,7 @@ def readEAGLE(verbose=None):
     c = Haloc200[select_halos]
     
     for i in np.arange(28,5,-1):
-        with h5py.File('../../data_mahstery/L0100N1504_DMONLY_%03d.hdf5'%i,'r') as snap:
+        with h5py.File('../../data_mahstery/data/L0100N1504_DMONLY_%03d.hdf5'%i,'r') as snap:
             M200 = snap['/Subhalo/M_Crit200'][:]
             GalaxyID = snap['/Subhalo/GalaxyID'][:]
         
@@ -168,7 +169,7 @@ def bestfit(x,gamma):
     f = alpha*x/3.+gamma*(np.exp(x/3.)-1.0)
     return f
 
-def run(Mz=None, z=None, c=None, verbose=None):
+def run(Mz=None, z=None, c=None, verbose=None, output=True):
     """ Run mahstery code to obtain the best-fit expression for halo mass
         accretion histories from arrays Mz, z & c.
         This is based on Correa et al. (2015b)
@@ -193,6 +194,9 @@ def run(Mz=None, z=None, c=None, verbose=None):
         data is taken from EAGLE DMO simulation.
     verbose : bool, optional
         If true then give comments, default is None.
+    verbose : bool, optional
+        If true then mahstery outputs a plot, default is True.
+
 
     Returns
     -------
@@ -205,11 +209,27 @@ def run(Mz=None, z=None, c=None, verbose=None):
     """
     if Mz:
         # Convert arrays / lists to np.array
+        print('Calculating best-fit expression from Mz, z and c input arrays')
         Mz, z, c = _checkinput(Mz, z, c, verbose=verbose)
     else:
         print('Calculating best-fit expression from EAGLE DMO L0100N1504 simulation')
         Mz, z, c = readEAGLE(verbose=verbose)
 
+    if output:
+        print('Outputing .png file showing best-fit function')
+        # Plot parameters
+        params = {'font.size': 19,'text.usetex': True,
+        'figure.figsize' : (6,4),
+        'figure.subplot.left'    : 0.12,
+        'figure.subplot.right'   : 0.95,
+        'figure.subplot.bottom'  : 0.19,
+        'figure.subplot.top'     : 0.95,
+        'text.latex.unicode': True}
+        plt.rcParams.update(params)
+        plt.rc('font',**{'family':'Times New Roman'})
+        fig = plt.figure()
+        sub = plt.subplot(1,1,1)
+        sub.grid(True)
 
     # Making fit:
     #First separate in mass bins
@@ -231,6 +251,7 @@ def run(Mz=None, z=None, c=None, verbose=None):
     
         #loop over individual haloes in mass bin
         for j in index_i:
+            if len(np.where(Mz[j,:]!=0.0)[0])<5:continue #At least 5 points in Mz-z plane
             halo_Mz,halo_z,halo_c,halo_M2,halo_rho2,halo_zf = MAH(Mz[j,:],z,c[j])
             rho_m = np.log((1.+halo_z)**3/(1.+halo_zf)**3) # x value
             halo_m = np.log(10**halo_Mz/10**halo_M2) # y value
@@ -258,10 +279,29 @@ def run(Mz=None, z=None, c=None, verbose=None):
         # Calculate best-fitting constant gamma
         popt, pcov = curve_fit(bestfit,xsend, ym)
         gamma = np.append(gamma,popt[0])
-    
-    gamma = np.median(gamma)
-    print('Best-fit gamma param %.2f' %gamma)
+
+        if output: plt.plot(xm,ym,'-',lw=2.5)
+
+    err = (np.median(gamma)-np.percentile(gamma,25))**2
+    err += (np.percentile(gamma,75)-np.median(gamma))**2
+    err = np.sqrt(err)
+    gamma_m = np.median(gamma)
+    print('Best-fit gamma param %.2f' %gamma_m +'+/- %.2f' %err)
+
+    if output:
+        xsend = np.array([alpha_1,alpha_2])
+        xsend = np.append(xsend,xbins)
+        plt.plot(xbins,bestfit(xsend,gamma_m),'-',lw=3,color='white')
+        plt.plot(xbins,bestfit(xsend,gamma_m),'--',lw=2.4,color='black',label='Bestfit: $\gamma=$ %.2f' %gamma_m +'+/- %.2f' %err)
+
+        plt.axis([-6,2,-2,3])
+        plt.xlabel(r'ln $\rho_{\rm{m}}(z)/\rho_{\rm{m}}(z=z_{-2})$')
+        plt.ylabel('ln $M(z)/M_{-2}$')
+        plt.legend(loc=[0.05,0.05],prop={'size':19},frameon=False,
+               borderpad=0.3,labelspacing=0.2,handletextpad=0.2)
+        plt.savefig("mahstery_output.png", dpi=200)
     return
 
-
+if __name__ == '__main__':
+    run(output=True)
 

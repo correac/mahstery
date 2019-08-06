@@ -13,7 +13,7 @@ Types of Contributions
 Report Bugs
 ~~~~~~~~~~~
 
-Report bugs at https://github.com/correac/mahstery/issues.
+Report bugs at https://github.com/correac/mah_routine/issues.
 
 If you are reporting a bug, please include:
 
@@ -36,7 +36,7 @@ is open to whoever wants to implement it.
 Submit Feedback
 ~~~~~~~~~~~~~~~
 
-The best way to send feedback is to file an issue at https://github.com/correac/mahstery/issues.
+The best way to send feedback is to file an issue at https://github.com/correac/mah_routine/issues.
 
 If you are proposing a feature:
 

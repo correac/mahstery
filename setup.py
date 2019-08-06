@@ -15,14 +15,13 @@ setup(
       author_email='correa@strw.leidenuniv.nl',
       url='https://github.com/correac/mahstery',
       license="BSD",
-      keywords=['mahstery','cosmology','astronomy','NFW','concentration','accretion'],
-      classifiers=[
-                   'Development Status :: 0',
+      keywords=['mahstery','cosmology','NFW','concentration','accretion'],
+      classifiers=['Development Status :: 0',
                    'Intended Audience :: Developers',
                    'Natural Language :: English',
                    'Programming Language :: Python :: 3.0']
-      install_requires=[
-                        'numpy',
+      install_requires=['numpy',
                         'scipy',
                         'pylab',
-                        'h5py'])
+                        'h5py',
+                        'matplotlib'])
