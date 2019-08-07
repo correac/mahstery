@@ -15,25 +15,22 @@ Note that mahstery assumes halo virial mass (M200) is 200 times critical overden
 concentration is the ratio of halo virial mass (R200) over scale radius (obtained from best-fit NFW profile)
 
 ### Getting started
-Create a base folder to hold data and code, for example ``mkdir mahstery``. Enter into the folder and download EAGLE database (1.3G) [here](https://home.strw.leidenuniv.nl/~correa/download/data_mahstery.zip). Unzip the data_mahstery folder. Then type ``git clone git@github.com:correac/mah_routine.git`` to get the code. 
 
-You have two options, install the code in development mode (it is highly recommended to use a virtual environment):
+You can begin by running ``example.py``, which uses mahstery on EAGLE data. To do so, first download the EAGLE database (1.3G) [here](https://home.strw.leidenuniv.nl/~correa/download/data_mahstery.zip). Unzip the data_mahstery folder. Then type ``git clone git@github.com:correac/mah_routine.git`` to get the code, in the file ``mah_routine/mahstery/example.py`` specify the path to the data_mahstery folder. Finally run it:
 
 ```
 $ cd mah_routine
-$ python setup.py develop
+$ python example.py
 ```
 
-And you test the installation by running:
-```
-$ mahstery
-```
-
-If you don't want to install the package, you can run it directly by executing the following command:
+mahstery requires as input haloes' mass growth (Mz=M(z)), redshift (z) and z=0 halos' concentrations (c). Once you have this data you can run mahstery as follows
 
 ```
-$ python -m mahstery
+$ python
+>> from mahstery import run
+>> run(Mz,z,c)
 ```
+
 
 ### Support and Contact
 

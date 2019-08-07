@@ -50,7 +50,7 @@ def convert_to_np_array(x):
     :return: numpy array
     """
 
-    if not isinstance(x, np.array):
+    if not isinstance(x, np.ndarray):
         try:
             x = np.array(x)
         except TypeError:

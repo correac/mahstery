@@ -1,12 +1,11 @@
 import os
-
 import h5py
 import numpy as np
 
 
-def which_redshift(snap, filename=None):
+def which_redshift(dir,snap, filename=None):
     if not filename:
-        file = '../data_mahstery/data/eagle_aexpoutputs.txt'
+        file = dir+'data_mahstery/data/eagle_aexpoutputs.txt'
     else:
         base_path = os.path.abspath(os.path.dirname(__file__))
         file = os.path.join(base_path, filename)
@@ -17,14 +16,11 @@ def which_redshift(snap, filename=None):
     return z[select]
 
 
-def readEAGLE(verbose=None, filename=None):
+def readEAGLE(dir,verbose=None):
     """ Getting some data from the EAGLE simulations,
         dark matter only run (DMO) L0100N1504 """
-    if not filename:
-        file = '../data_mahstery/data/L100N1504_DMONLY_catalogue_FOFgroups.hdf5'
-    else:
-        base_dir = os.path.abspath(os.path.dirname(__file__))
-        file = os.path.join(base_dir, filename)
+
+    file = dir+'data_mahstery/data/L100N1504_DMONLY_catalogue_FOFgroups.hdf5'
 
     with h5py.File(file, "r") as hf:
         Haloc200 = hf['Data/c200'][()]
@@ -48,7 +44,7 @@ def readEAGLE(verbose=None, filename=None):
     c = Haloc200[select_halos]
 
     for i in np.arange(28, 5, -1):
-        with h5py.File('../data_mahstery/data/L0100N1504_DMONLY_%03d.hdf5' % i, 'r') as snap:
+        with h5py.File(dir+'data_mahstery/data/L0100N1504_DMONLY_%03d.hdf5' % i, 'r') as snap:
             M200 = snap['/Subhalo/M_Crit200'][:]
             GalaxyID = snap['/Subhalo/GalaxyID'][:]
 
@@ -72,5 +68,5 @@ def readEAGLE(verbose=None, filename=None):
 
     zrange = np.zeros(nsnap)
     for i in range(28, 5, -1):
-        zrange[28 - i] = which_redshift(i)
+        zrange[28 - i] = which_redshift(dir,i)
     return Mz, zrange, c

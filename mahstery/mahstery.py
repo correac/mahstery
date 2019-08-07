@@ -8,12 +8,11 @@ import numpy as np
 from scipy.optimize import curve_fit
 import matplotlib.pyplot as plt
 
-from mahstery.eagle_util import readEAGLE
-from mahstery.mah import MAH
-from mahstery.util import checkinput, bestfit
+from mah import MAH
+from util import checkinput, bestfit
 
 
-def run(Mz=None, z=None, c=None, verbose=None, output=True):
+def run(Mz, z, c, verbose=None, output=True):
     """ Run mahstery code to obtain the best-fit expression for halo mass
         accretion histories from arrays Mz, z & c.
         This is based on Correa et al. (2015b)
@@ -25,17 +24,13 @@ def run(Mz=None, z=None, c=None, verbose=None, output=True):
         the number of output redshifts from the simulation.
         Mz[:,0] should correspond to the halo mass M200 of all
         haloes at z = 0. Mz[0,:] should correspond to the halo
-        mass history M(z) of halo index 0. Default is none, which
-        means data is taken from EAGLE DMO simulation.
+        mass history M(z) of halo index 0.
         Mz must be in unit of solar masses.
     z : numpy array of dimensions n_snashots, where n_snashots
         is the number of output redshifts from the simulation.
-        Default is none, which means data is taken from EAGLE
-        DMO simulation.
     c : numpy array of dimensions n_haloes, where n_halos is the
         number of haloes from the simulation. c corresponds to
-        the halos' concentration c200. Default is none, which means
-        data is taken from EAGLE DMO simulation.
+        the halos' concentration c200.
     verbose : bool, optional
         If true then give comments, default is None.
     output : bool, optional
@@ -48,19 +43,16 @@ def run(Mz=None, z=None, c=None, verbose=None, output=True):
 
     Examples
     --------
-    >>> run()
+    >>> run(M,z,c)
+    
+    or see examples.py
     
     """
-    if Mz:
-        # Convert arrays / lists to np.array
-        print('Calculating best-fit expression from Mz, z and c input arrays')
-        Mz, z, c = checkinput(Mz, z, c, verbose=verbose)
-    else:
-        print('Calculating best-fit expression from EAGLE DMO L0100N1504 simulation')
-        Mz, z, c = readEAGLE(verbose=verbose)
+    # Convert arrays / lists to np.array
+    print('Calculating best-fit expression from Mz, z and c input arrays')
+    Mz, z, c = checkinput(Mz, z, c, verbose=verbose)
 
     if output:
-        print('Outputing .png file showing best-fit function')
         # Plot parameters
         params = {'font.size': 19, 'text.usetex': True,
                   'figure.figsize': (6, 4),
@@ -146,6 +138,8 @@ def run(Mz=None, z=None, c=None, verbose=None, output=True):
         plt.legend(loc=[0.05, 0.05], prop={'size': 19}, frameon=False,
                    borderpad=0.3, labelspacing=0.2, handletextpad=0.2)
         plt.savefig("mahstery_output.png", dpi=200)
+        print('Outputing .png file showing best-fit function')
+
     return
 
 

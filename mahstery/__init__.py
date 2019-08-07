@@ -3,4 +3,4 @@
 __author__ = 'Camila Correa'
 __version__ = '0.0.1'
 
-from .mahstery import run
+from mahstery import run
