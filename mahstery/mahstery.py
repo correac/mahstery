@@ -48,13 +48,14 @@ def run(Mz, z, c, verbose=None, output=True):
     or see examples.py
     
     """
+    print('============================================')
     print('Details of best-fitting halo mass histories:')
     print('We assume it to be M(z) = M(z=0) x (1+z)^alpha x e^(beta x z),')
     print('where alpha = [ln(Y(1)/Y(c)-gamma x zf/(1+zf)]/ln(1+zf),')
     print('c concentration, zf formation time and gamma best-fitting value,')
-    print('and beta = gamma / (1+zf).')
-    print('For more details see Correa et al. (2015b).')
-    
+    print('and beta = gamma / (1+zf) (for more details see Correa et al. 2015b).')
+    print('============================================')
+
     # Convert arrays / lists to np.array
     print('Calculating best-fit value of gamma from Mz, z and c input arrays')
     Mz, z, c = checkinput(Mz, z, c, verbose=verbose)
