@@ -48,8 +48,15 @@ def run(Mz, z, c, verbose=None, output=True):
     or see examples.py
     
     """
+    print('Details of best-fitting halo mass histories:')
+    print('We assume it to be M(z) = M(z=0) x (1+z)^alpha x e^(beta x z),')
+    print('where alpha = [ln(Y(1)/Y(c)-gamma x zf/(1+zf)]/ln(1+zf),')
+    print('c concentration, zf formation time and gamma best-fitting value,')
+    print('and beta = gamma / (1+zf).')
+    print('For more details see Correa et al. (2015b).')
+    
     # Convert arrays / lists to np.array
-    print('Calculating best-fit expression from Mz, z and c input arrays')
+    print('Calculating best-fit value of gamma from Mz, z and c input arrays')
     Mz, z, c = checkinput(Mz, z, c, verbose=verbose)
 
     if output:
@@ -138,8 +145,8 @@ def run(Mz, z, c, verbose=None, output=True):
         plt.legend(loc=[0.05, 0.05], prop={'size': 19}, frameon=False,
                    borderpad=0.3, labelspacing=0.2, handletextpad=0.2)
         plt.savefig("mahstery_output.png", dpi=200)
-        print('Outputing .png file showing best-fit function')
-
+        print('Outputing .png file showing best-fit function.')
+    
     return
 
 

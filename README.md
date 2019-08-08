@@ -16,10 +16,10 @@ concentration is the ratio of halo virial mass (R200) over scale radius (obtaine
 
 ### Getting started
 
-You can begin by running ``example.py``, which uses mahstery on EAGLE data. To do so, first download the EAGLE database (1.3G) [here](https://home.strw.leidenuniv.nl/~correa/download/data_mahstery.zip). Unzip the data_mahstery folder. Then type ``git clone git@github.com:correac/mah_routine.git`` to get the code, in the file ``mah_routine/mahstery/example.py`` specify the path to the data_mahstery folder. Finally run it:
+You can begin by running ``example.py``, which uses mahstery on EAGLE data. To do so, first download the EAGLE database (1.3G) [here](https://home.strw.leidenuniv.nl/~correa/download/data_mahstery.zip). Unzip the data_mahstery folder. Then type ``git clone git@github.com:correac/mahstery.git`` to get the code, in the file ``mahstery/mahstery/example.py`` specify the path to the data_mahstery folder. Finally run it:
 
 ```
-$ cd mah_routine
+$ cd mahstery/mahstery
 $ python example.py
 ```
 
@@ -35,4 +35,4 @@ $ python
 ### Support and Contact
 
 If you have trouble with mahstery or you have feature requests/suggestions please
-open an issue at https://github.com/correac/mah_routine/issues
+open an issue at https://github.com/correac/mahstery/issues

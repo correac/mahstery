@@ -12,4 +12,4 @@ Mz, z, c = readEAGLE(dir)
 
 print('Running mahstery')
 run(Mz, z, c)
-print('Done. mahstery has outputted mahstery_output.png file')
+print('Done. mahstery output mahstery_output.png file')
