@@ -29,11 +29,11 @@ setup(
     install_requires=['numpy',
                       'scipy',
                       'h5py',
-                      'matplotlib'],
-    entry_points={
-        'console_scripts': [
-            'mahstery = mahstery.mahstery:run'
-        ],
-    },
-    packages=find_packages()
+                      'matplotlib']
+      #entry_points={
+      #'console_scripts': [
+      #      'mahstery = mahstery.mahstery:run'
+      #  ],
+      #},
+      #packages=find_packages()
 )
